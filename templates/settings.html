@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input {
+            margin-bottom: 20px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Settings</h1>
+    <form method="POST" action="/settings">
+        <label for="JSON_STREAM_HOST">Server IP</label>
+        <input type="text" id="JSON_STREAM_HOST" name="JSON_STREAM_HOST" value="{{ settings.JSON_STREAM_HOST }}">
+
+        <label for="JSON_STREAM_PORT">Server Port</label>
+        <input type="number" id="JSON_STREAM_PORT" name="JSON_STREAM_PORT" value="{{ settings.JSON_STREAM_PORT }}">
+
+        <label for="RSSI_MIN">RSSI Min</label>
+        <input type="number" id="RSSI_MIN" name="RSSI_MIN" value="{{ settings.RSSI_MIN }}">
+
+        <label for="RSSI_MAX">RSSI Max</label>
+        <input type="number" id="RSSI_MAX" name="RSSI_MAX" value="{{ settings.RSSI_MAX }}">
+
+        <label for="SNR_MIN">SNR Min</label>
+        <input type="number" id="SNR_MIN" name="SNR_MIN" value="{{ settings.SNR_MIN }}">
+
+        <label for="SNR_MAX">SNR Max</label>
+        <input type="number" id="SNR_MAX" name="SNR_MAX" value="{{ settings.SNR_MAX }}">
+
+        <label for="DATA_REDUNDANCY_MIN">Data Redundancy Min</label>
+        <input type="number" id="DATA_REDUNDANCY_MIN" name="DATA_REDUNDANCY_MIN" value="{{ settings.DATA_REDUNDANCY_MIN }}">
+
+        <label for="DATA_REDUNDANCY_MAX">Data Redundancy Max</label>
+        <input type="number" id="DATA_REDUNDANCY_MAX" name="DATA_REDUNDANCY_MAX" value="{{ settings.DATA_REDUNDANCY_MAX }}">
+
+        <label for="DERIVATIVE_WINDOW">Derivative Window</label>
+        <input type="number" id="DERIVATIVE_WINDOW" name="DERIVATIVE_WINDOW" value="{{ settings.DERIVATIVE_WINDOW }}">
+
+        <label for="DERIVATIVE_MIN">Derivative Min</label>
+        <input type="number" id="DERIVATIVE_MIN" name="DERIVATIVE_MIN" value="{{ settings.DERIVATIVE_MIN }}">
+
+        <label for="DERIVATIVE_MAX">Derivative Max</label>
+        <input type="number" id="DERIVATIVE_MAX" name="DERIVATIVE_MAX" value="{{ settings.DERIVATIVE_MAX }}">
+
+        <label for="FEC_REC_MIN">FEC_REC Min</label>
+        <input type="number" id="FEC_REC_MIN" name="FEC_REC_MIN" value="{{ settings.FEC_REC_MIN }}">
+
+        <label for="FEC_REC_MAX">FEC_REC Max</label>
+        <input type="number" id="FEC_REC_MAX" name="FEC_REC_MAX" value="{{ settings.FEC_REC_MAX }}">
+
+        <label for="LOST_MIN">LOST Min</label>
+        <input type="number" id="LOST_MIN" name="LOST_MIN" value="{{ settings.LOST_MIN }}">
+
+        <label for="LOST_MAX">LOST Max</label>
+        <input type="number" id="LOST_MAX" name="LOST_MAX" value="{{ settings.LOST_MAX }}">
+
+        <label for="MBIT_MIN">Mbit/s Min</label>
+        <input type="number" id="MBIT_MIN" name="MBIT_MIN" value="{{ settings.MBIT_MIN }}">
+
+        <label for="MBIT_MAX">Mbit/s Max</label>
+        <input type="number" id="MBIT_MAX" name="MBIT_MAX" value="{{ settings.MBIT_MAX }}">
+
+        <label for="MAX_SAMPLES">Max Samples</label>
+        <input type="number" id="MAX_SAMPLES" name="MAX_SAMPLES" value="{{ settings.MAX_SAMPLES }}">
+
+        <label for="SOCKET_TIMEOUT">Socket Timeout (seconds)</label>
+        <input type="number" id="SOCKET_TIMEOUT" name="SOCKET_TIMEOUT" value="{{ settings.SOCKET_TIMEOUT }}">
+
+        <button type="submit">Save Settings</button>
+    </form>
+    <a href="/">Back to Live View</a>
+</body>
+
+
+
+
+<head>
+  <meta charset="utf-8" />
+  <title>Remote Command Control</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    .cmdButton {
+      margin: 4px;
+      padding: 6px;
+    }
+    #logArea {
+      width: 100%;
+      height: 300px;
+      background-color: #1e1e1e;
+      color: #ddd;
+      font-family: monospace;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    #statusIndicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 4px;
+      vertical-align: middle;
+      background-color: red; /* default: stopped */
+    }
+    .presetCommandRow {
+      margin-bottom: 8px;
+    }
+    .presetCommandRow input {
+      width: 300px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Remote Command Execution</h1>
+
+  <!-- Status display -->
+  <div>
+    <span id="statusIndicator"></span>
+    <span id="statusText">No command running</span>
+  </div>
+
+  <hr />
+
+  <!-- Preset Commands (with textboxes for arguments) -->
+  <div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript1.sh', document.getElementById('argScript1').value)">
+        Script 1
+      </button>
+      <input type="text" id="argScript1" placeholder="e.g. /etc/wifibroadcast.cfg peer 'connect://...'">
+    </div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript2.sh', document.getElementById('argScript2').value)">
+        Script 2
+      </button>
+      <input type="text" id="argScript2" placeholder="Multiple arguments OK">
+    </div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript3.sh', document.getElementById('argScript3').value)">
+        Script 3
+      </button>
+      <input type="text" id="argScript3" placeholder="Multiple arguments OK">
+    </div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript4.sh', document.getElementById('argScript4').value)">
+        Script 4
+      </button>
+      <input type="text" id="argScript4" placeholder="Multiple arguments OK">
+    </div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript5.sh', document.getElementById('argScript5').value)">
+        Script 5
+      </button>
+      <input type="text" id="argScript5" placeholder="Multiple arguments OK">
+    </div>
+    <div class="presetCommandRow">
+      <button class="cmdButton" 
+              onclick="attemptStart('/usr/bin/extcmd_userscript6.sh', document.getElementById('argScript6').value)">
+        Script 6
+      </button>
+      <input type="text" id="argScript6" placeholder="Multiple arguments OK">
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- Log window -->
+  <pre id="logArea"></pre>
+
+  <!-- Controls for input and stopping -->
+  <input type="text" id="inputField" placeholder="Type input to send..." />
+  <button onclick="sendInput()">Send</button>
+  <button onclick="stopCommand()">Stop</button>
+  <button onclick="clearLog()">Clear</button>
+
+  <hr />
+
+  <script>
+    let eventSource = null;
+    let isRunning = false; // Track current run state
+    const statusText = document.getElementById('statusText');
+    const statusIndicator = document.getElementById('statusIndicator');
+    const logArea = document.getElementById('logArea');
+    const inputField = document.getElementById('inputField');
+
+    // -------------
+    // ARG PARSER
+    // -------------
+    // This function splits a string into arguments, respecting
+    // both single or double quotes. For example, the user might type:
+    //   /etc/wifibroadcast.cfg peer 'connect://192.168.1.242:5601'
+    // This should parse into:
+    //   ["/etc/wifibroadcast.cfg", "peer", "connect://192.168.1.242:5601"]
+    //
+    function parseArgString(str) {
+      // Regex: match either double-quoted text, single-quoted text, or unquoted text.
+      const regex = /"([^"]*)"|'([^']*)'|(\S+)/g;
+      const args = [];
+      let match;
+      while ((match = regex.exec(str)) !== null) {
+        // match[1] = text in double quotes (no quotes included)
+        // match[2] = text in single quotes (no quotes included)
+        // match[3] = an unquoted token
+        args.push(match[1] || match[2] || match[3]);
+      }
+      return args;
+    }
+
+    // 1) Attempt to start a command only if no command is running
+    //    Otherwise, prompt the user or do nothing.
+    function attemptStart(command, argValue) {
+      if (isRunning) {
+        alert("A command is already running. Please stop it first.");
+        return;
+      }
+      // Parse the user input into an array of arguments
+      const argsArr = parseArgString(argValue || "");
+      startCommand(command, argsArr);
+    }
+
+    // 2) Start a command
+    function startCommand(command, args) {
+      closeSSE(); // Just to be sure we reset any old connection
+      fetch('/command/start', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ command, args })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) {
+          alert("Error: " + data.message);
+          return;
+        }
+        // Command started successfully, clear the log & open SSE
+        clearLog();
+        connectSSE();
+        updateStatus(); // Refresh status info
+      })
+      .catch(err => console.error(err));
+    }
+
+    // 3) Stop the current command
+    //    We'll do the graceful approach (SIGINT -> fallback -> SIGTERM).
+    function stopCommand() {
+      fetch('/command/stop', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          // Even if we got an error, we might still refresh status
+          updateStatus();
+        })
+        .catch(err => console.error(err));
+    }
+
+    // 4) Send manual input (e.g., password) to stdin
+    function sendInput() {
+      const txt = inputField.value;
+      if (!txt) return;
+
+      fetch('/command/input', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: txt })
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) {
+          alert("Error: " + data.message);
+        } else {
+          // Optionally clear the input
+          inputField.value = '';
+        }
+      });
+    }
+
+    // 5) SSE for real-time log updates
+    function connectSSE() {
+      eventSource = new EventSource('/command/stream');
+
+      eventSource.onmessage = (evt) => {
+        // Append data to the log area
+        logArea.textContent += evt.data + "\n";
+        logArea.scrollTop = logArea.scrollHeight;
+      };
+
+      eventSource.onerror = (evt) => {
+        // SSE can error out if the server closes the connection or network issues
+        console.warn("SSE error", evt);
+      };
+    }
+
+    // Clean up SSE connection
+    function closeSSE() {
+      if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+      }
+    }
+
+    // 6) Clear the log
+    function clearLog() {
+      logArea.textContent = "";
+    }
+
+    // 7) Periodic status update
+    function updateStatus() {
+      fetch('/command/status')
+        .then(r => r.json())
+        .then(info => {
+          // info = { cmd, args, running, exit_code }
+          isRunning = info.running;
+
+          if (info.running) {
+            statusIndicator.style.backgroundColor = 'green';
+            const cmdStr = [info.cmd, ...(info.args || [])].join(' ');
+            statusText.textContent = `Running: ${cmdStr}`;
+
+            // If no SSE is open, reconnect
+            if (!eventSource) {
+              connectSSE();
+            }
+          } else {
+            statusIndicator.style.backgroundColor = 'red';
+            statusText.textContent = `Stopped (exit code: ${info.exit_code})`;
+
+            // If the SSE is still open, close it
+            closeSSE();
+          }
+        })
+        .catch(err => console.error(err));
+    }
+
+    // 8) Poll status at intervals (e.g., every 2s)
+    setInterval(updateStatus, 2000);
+
+    // 9) On page load, do an initial status check
+    document.addEventListener('DOMContentLoaded', () => {
+      updateStatus();
+    });
+  </script>
+</body>
+</html>
