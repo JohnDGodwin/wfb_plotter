@@ -5,12 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenIPC</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .control-link {
+            display: block;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            font-size: 1.1rem;
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .control-link:hover {
+            background-color: var(--primary-hover);
+            color: white;
+        }
+
+        @media (max-width: 576px) {
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .control-link {
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Radxa Zero 3 -- OpenIPC Groundstation</h1>
-    <div class="controls">
-        <a href="/file-browser">File Browser</a>
-        <a href="/config-editor">Config editor</a>
+    <div class="container">
+        <h1>Radxa Zero 3 -- OpenIPC Groundstation</h1>
+        <div class="controls">
+            <a href="/file-browser" class="control-link">File Browser</a>
+            <a href="/config-editor" class="control-link">Config Editor</a>
+        </div>
     </div>
 </body>
 </html>
