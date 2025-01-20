@@ -5,6 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Browser</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+    // Load current config from server (if available) into a JS object
+    let configData = {{ config|tojson if config else "{}" | safe }};
+
+    // Switch to a selected file
+    function onFileChange() {
+      const selectedFile = document.getElementById('whitelist').value;
+      if (selectedFile) {
+        window.location.href = `/config-editor?file=${encodeURIComponent(selectedFile)}`;
+      } else {
+        // If user picks blank, just go to /config-editor
+        window.location.href = '/config-editor';
+      }
+    }
+
+    // Render the configData into the DOM
+    function renderConfig() {
+      const container = document.getElementById("config-sections");
+      container.innerHTML = "";
+
+      // For each section in configData
+      for (const [section, settings] of Object.entries(configData)) {
+        const fieldset = document.createElement("fieldset");
+        fieldset.className = "border p-3 mb-4";
+
+        // Legend (section name only; no remove button)
+        const legend = document.createElement("legend");
+        legend.className = "w-auto";
+        legend.textContent = section;
+        fieldset.appendChild(legend);
+
+        // For each setting in this section
+        for (const [key, value] of Object.entries(settings)) {
+          const row = document.createElement("div");
+          row.className = "mb-3 d-flex align-items-center";
+
+          // Key label
+          const label = document.createElement("label");
+          label.className = "form-label me-2 mb-0";
+          label.innerHTML = `<strong>${key}</strong>`;
+
+          // Text input for value
+          const input = document.createElement("input");
+          input.type = "text";
+          input.className = "form-control me-2";
+          input.value = value;
+          input.style.maxWidth = "400px";
+
+          row.appendChild(label);
+          row.appendChild(input);
+          fieldset.appendChild(row);
+        }
+
+        container.appendChild(fieldset);
+      }
+    }
+
+    // Gather data from UI inputs and submit as JSON
+    function prepareAndSubmit() {
+      // Re-scan the rendered inputs
+      const container = document.getElementById("config-sections");
+      const fieldsets = container.querySelectorAll("fieldset");
+      const newConfig = {};
+
+      fieldsets.forEach(fieldset => {
+        const legendEl = fieldset.querySelector("legend");
+        if (!legendEl) return;
+
+        const sectionName = legendEl.innerText.trim();
+        newConfig[sectionName] = {};
+
+        // Each row (div.mb-3.d-flex)
+        const rows = fieldset.querySelectorAll("div.mb-3.d-flex");
+        rows.forEach(row => {
+          const label = row.querySelector("label");
+          const input = row.querySelector("input");
+          if (!label || !input) return;
+          const key = label.innerText.trim();
+          const val = input.value;
+          newConfig[sectionName][key] = val;
+        });
+      });
+
+      document.getElementById("config_json").value = JSON.stringify(newConfig);
+      document.getElementById("configForm").submit();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderConfig();
+    });
+  </script>
 </head>
 <body>
   <h1>File Browser</h1>
