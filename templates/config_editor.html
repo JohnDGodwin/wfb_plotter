@@ -10,22 +10,22 @@
     let configData = {{ config|tojson if config else "{}" | safe }};
 
     // Switch to a selected file
+    // Switch to a selected file
     function onFileChange() {
       const selectedFile = document.getElementById('whitelist').value;
-      const gsKeyUpload = document.getElementById('gsKeyUpload');
-      
-      // Show/hide gs.key upload section
       if (selectedFile === '/etc/gs.key') {
+        // For gs.key, don't redirect, just show upload section
+        const gsKeyUpload = document.getElementById('gsKeyUpload');
         gsKeyUpload.style.display = 'block';
       } else {
+        // For other files, hide upload and redirect
+        const gsKeyUpload = document.getElementById('gsKeyUpload');
         gsKeyUpload.style.display = 'none';
-      }
-      
-      if (selectedFile) {
-        window.location.href = `/config-editor?file=${encodeURIComponent(selectedFile)}`;
-      } else {
-        // If user picks blank, just go to /config-editor
-        window.location.href = '/config-editor';
+        if (selectedFile) {
+          window.location.href = `/config-editor?file=${encodeURIComponent(selectedFile)}`;
+        } else {
+          window.location.href = '/config-editor';
+        }
       }
     }
 
@@ -164,8 +164,7 @@
         {% endfor %}
       </select>
     </div>
-      <!-- File upload section for gs.key -->
-    <div id="gsKeyUpload" class="mt-3" style="display: none;">
+    <div id="gsKeyUpload" class="mt-3" {% if selected_path == '/etc/gs.key' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
       <label for="gsKeyFile" class="form-label">Upload gs.key file:</label>
       <div class="d-flex gap-2">
         <input type="file" class="form-control" id="gsKeyFile" accept="*/*">
