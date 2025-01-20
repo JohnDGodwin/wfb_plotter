@@ -12,12 +12,58 @@
     // Switch to a selected file
     function onFileChange() {
       const selectedFile = document.getElementById('whitelist').value;
+      const gsKeyUpload = document.getElementById('gsKeyUpload');
+      
+      // Show/hide gs.key upload section
+      if (selectedFile === '/etc/gs.key') {
+        gsKeyUpload.style.display = 'block';
+      } else {
+        gsKeyUpload.style.display = 'none';
+      }
+      
       if (selectedFile) {
         window.location.href = `/config-editor?file=${encodeURIComponent(selectedFile)}`;
       } else {
         // If user picks blank, just go to /config-editor
         window.location.href = '/config-editor';
       }
+    }
+
+    // Function to upload gs.key file
+    function uploadGsKey() {
+      const fileInput = document.getElementById('gsKeyFile');
+      const statusDiv = document.getElementById('uploadStatus');
+      
+      if (!fileInput.files.length) {
+        statusDiv.innerHTML = '<div class="alert alert-danger">Please select a file first.</div>';
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+      formData.append('targetPath', '/etc/gs.key');
+
+      statusDiv.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+
+      fetch('/files/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          statusDiv.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+        } else {
+          statusDiv.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+          // Reload the page after successful upload to show new content
+          setTimeout(() => {
+            window.location.reload();
+          }, 1500);
+        }
+      })
+      .catch(error => {
+        statusDiv.innerHTML = `<div class="alert alert-danger">Upload failed: ${error}</div>`;
+      });
     }
 
     // Render the configData into the DOM
@@ -117,6 +163,14 @@
         <option value="{{ path }}" {% if path == selected_path %}selected{% endif %}>{{ path }}</option>
         {% endfor %}
       </select>
+    </div>
+      <div id="gsKeyUpload" class="mt-3" style="display: none;">
+      <label for="gsKeyFile" class="form-label">Upload gs.key file:</label>
+      <div class="d-flex gap-2">
+        <input type="file" class="form-control" id="gsKeyFile" accept="*/*">
+        <button type="button" class="btn btn-primary" onclick="uploadGsKey()">Upload</button>
+      </div>
+      <div id="uploadStatus" class="mt-2"></div>
     </div>
   </fieldset>
 
