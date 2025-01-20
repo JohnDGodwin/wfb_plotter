@@ -13,12 +13,12 @@
     // Switch to a selected file
     function onFileChange() {
       const selectedFile = document.getElementById('whitelist').value;
+      
       if (selectedFile === '/etc/gs.key') {
-        // For gs.key, don't redirect, just show upload section
-        const gsKeyUpload = document.getElementById('gsKeyUpload');
-        gsKeyUpload.style.display = 'block';
+        // For gs.key, redirect to clear the page first
+        window.location.href = `/config-editor?file=${encodeURIComponent(selectedFile)}`;
       } else {
-        // For other files, hide upload and redirect
+        // For other files
         const gsKeyUpload = document.getElementById('gsKeyUpload');
         gsKeyUpload.style.display = 'none';
         if (selectedFile) {
