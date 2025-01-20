@@ -638,6 +638,16 @@ def config_editor():
     """
     selected_path = request.args.get('file', None)  # No default file loaded.
 
+    # Special handling for gs.key file
+    if selected_path == '/etc/gs.key':
+        return render_template(
+            'config_editor.html',
+            whitelisted_paths=ALLOWED_UPLOAD_PATHS,
+            selected_path=selected_path,
+            config=None,
+            info="Please use the upload button to manage the gs.key file."
+        )
+    
     # Handle saving updated data (POST)
     if request.method == 'POST':
         selected_path_post = request.args.get('file', None)
