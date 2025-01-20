@@ -128,6 +128,9 @@ app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), 't
 shutdown_flag = threading.Event()
 restart_flag = threading.Event()
 
+@app.route('/styles.css')
+def serve_css():
+    return send_from_directory('templates', 'styles.css', mimetype='text/css')
 
 @app.route('/viewer')
 def viewer_page():
