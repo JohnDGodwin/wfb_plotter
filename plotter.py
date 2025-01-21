@@ -1160,6 +1160,40 @@ def update_fec():
                        "message": f"Failed to update FEC parameters: {e.stdout if e.stdout else str(e)}"}, 
                        500)
 
+@app.route('/camera/read-wfb-config')
+def read_wfb_config():
+    try:
+        # Use the command from commands.sh
+        cmd = ['bash', '-c', 'source ./commands.sh && read_wfb_config']
+        
+        result = subprocess.run(cmd, 
+                              capture_output=True, 
+                              text=True, 
+                              check=True)
+        
+        # Parse the config file content
+        config_dict = {}
+        for line in result.stdout.splitlines():
+            line = line.strip()
+            if line and not line.startswith('#'):
+                # Skip the "Reading WFB configuration" message
+                if "Reading WFB configuration" not in line:
+                    try:
+                        key, value = line.split('=', 1)
+                        config_dict[key.strip()] = value.strip()
+                    except ValueError:
+                        continue
+        
+        return jsonify({
+            "success": True,
+            "config": config_dict
+        })
+    except subprocess.CalledProcessError as e:
+        return jsonify({
+            "success": False,
+            "message": f"Failed to read config: {e.stderr if e.stderr else str(e)}"
+        }), 500
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
