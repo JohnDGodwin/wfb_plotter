@@ -12,6 +12,7 @@ import sys
 import configparser
 import subprocess
 import queue
+import yaml
 
 from udp_streamer import UDPStreamer  # External module for UDP streaming
 
@@ -1160,38 +1161,67 @@ def update_fec():
                        "message": f"Failed to update FEC parameters: {e.stdout if e.stdout else str(e)}"}, 
                        500)
 
-@app.route('/camera/read-wfb-config')
-def read_wfb_config():
+@app.route('/camera/read-all-configs')
+def read_all_configs():
     try:
-        # Use the command from commands.sh
-        cmd = ['bash', '-c', 'source ./commands.sh && read_wfb_config']
+        # Read WFB config
+        wfb_cmd = ['bash', '-c', 'source ./commands.sh && read_wfb_config']
+        wfb_result = subprocess.run(wfb_cmd, 
+                                  capture_output=True, 
+                                  text=True, 
+                                  check=True)
         
-        result = subprocess.run(cmd, 
-                              capture_output=True, 
-                              text=True, 
-                              check=True)
+        # Read Majestic config
+        majestic_cmd = ['bash', '-c', 'source ./commands.sh && read_majestic_config']
+        majestic_result = subprocess.run(majestic_cmd, 
+                                       capture_output=True, 
+                                       text=True, 
+                                       check=True)
         
-        # Parse the config file content
-        config_dict = {}
-        for line in result.stdout.splitlines():
+        # Parse WFB config
+        wfb_config = {}
+        for line in wfb_result.stdout.splitlines():
             line = line.strip()
-            if line and not line.startswith('#'):
-                # Skip the "Reading WFB configuration" message
-                if "Reading WFB configuration" not in line:
-                    try:
-                        key, value = line.split('=', 1)
-                        config_dict[key.strip()] = value.strip()
-                    except ValueError:
-                        continue
+            if line and not line.startswith('#') and "Reading WFB configuration" not in line:
+                try:
+                    key, value = line.split('=', 1)
+                    wfb_config[key.strip()] = value.strip()
+                except ValueError:
+                    continue
+        
+        # Parse Majestic YAML config
+        try:
+            # Remove the "Reading majestic configuration" line
+            majestic_yaml = '\n'.join([line for line in majestic_result.stdout.splitlines() 
+                                     if "Reading majestic configuration" not in line])
+            majestic_config = yaml.safe_load(majestic_yaml)
+            
+            # Extract relevant video settings
+            video_settings = {}
+            if majestic_config and 'video0' in majestic_config:
+                video0 = majestic_config['video0']
+                video_settings = {
+                    'fps': video0.get('fps', 60),
+                    'bitrate': video0.get('bitrate', 4096),
+                    'size': video0.get('size', '1920x1080')
+                }
+            
+        except yaml.YAMLError as e:
+            return jsonify({
+                "success": False,
+                "message": f"Failed to parse YAML: {str(e)}"
+            }), 500
         
         return jsonify({
             "success": True,
-            "config": config_dict
+            "wfb_config": wfb_config,
+            "video_settings": video_settings
         })
+        
     except subprocess.CalledProcessError as e:
         return jsonify({
             "success": False,
-            "message": f"Failed to read config: {e.stderr if e.stderr else str(e)}"
+            "message": f"Failed to read configs: {e.stderr if e.stderr else str(e)}"
         }), 500
 
 if __name__ == '__main__':
