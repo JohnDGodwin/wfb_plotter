@@ -61,6 +61,99 @@
             </div>
         </div>
 
+        <!-- WFB Settings -->
+        <div class="row">
+            <!-- Channel Settings -->
+            <div class="col mb-4">
+                <form action="/camera/channel" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">Channel Settings</legend>
+                        <div class="mb-3">
+                            <label for="channel" class="form-label">WiFi Channel</label>
+                            <input type="number" id="channel" name="channel" class="form-control" value="161" min="1" max="165" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Channel</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- TX Power Override -->
+            <div class="col mb-4">
+                <form action="/camera/txpower" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">TX Power Settings</legend>
+                        <div class="mb-3">
+                            <label for="txpower" class="form-label">TX Power Override</label>
+                            <input type="number" id="txpower" name="txpower" class="form-control" value="1" min="0" max="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update TX Power</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- STBC Settings -->
+            <div class="col mb-4">
+                <form action="/camera/stbc" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">STBC Settings</legend>
+                        <div class="mb-3">
+                            <label for="stbc" class="form-label">STBC Enable</label>
+                            <input type="number" id="stbc" name="stbc" class="form-control" value="0" min="0" max="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update STBC</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- LDPC Settings -->
+            <div class="col mb-4">
+                <form action="/camera/ldpc" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">LDPC Settings</legend>
+                        <div class="mb-3">
+                            <label for="ldpc" class="form-label">LDPC Enable</label>
+                            <input type="number" id="ldpc" name="ldpc" class="form-control" value="0" min="0" max="1" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update LDPC</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- MCS Index Settings -->
+            <div class="col mb-4">
+                <form action="/camera/mcs" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">MCS Index Settings</legend>
+                        <div class="mb-3">
+                            <label for="mcs" class="form-label">MCS Index</label>
+                            <input type="number" id="mcs" name="mcs" class="form-control" value="1" min="0" max="7" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update MCS Index</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- FEC Settings -->
+            <div class="col mb-4">
+                <form action="/camera/fec" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">FEC Settings</legend>
+                        <div class="mb-3">
+                            <label for="fec_k" class="form-label">FEC K</label>
+                            <input type="number" id="fec_k" name="fec_k" class="form-control" value="8" min="1" max="16" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fec_n" class="form-label">FEC N</label>
+                            <input type="number" id="fec_n" name="fec_n" class="form-control" value="12" min="1" max="16" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update FEC</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
         <!-- Reboot Camera -->
         <div class="mb-4">
             <form action="/camera/reboot" method="POST" onsubmit="return confirm('Are you sure you want to reboot the camera?');">
