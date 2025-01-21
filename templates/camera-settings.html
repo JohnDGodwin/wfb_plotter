@@ -45,6 +45,20 @@
                     </fieldset>
                 </form>
             </div>
+
+            <!-- Bitrate Settings -->
+            <div class="col mb-4">
+                <form action="/camera/bitrate" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">Bitrate Settings</legend>
+                        <div class="mb-3">
+                            <label for="bitrate" class="form-label">Camera Bitrate (kbps)</label>
+                            <input type="number" id="bitrate" name="bitrate" class="form-control" value="4096" min="1000" max="20000" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Bitrate</button>
+                    </fieldset>
+                </form>
+            </div>
         </div>
 
         <!-- Reboot Camera -->
