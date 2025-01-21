@@ -991,31 +991,51 @@ def camera_settings():
 def update_fps():
     try:
         fps = request.form.get('fps', '60')
-        # Execute the update_fps command from commands.sh
-        subprocess.run(['bash', '-c', f'FPS={fps} ./commands.sh update_fps'], check=True)
-        return jsonify({"success": True, "message": f"FPS updated to {fps}"})
+        # Execute the command directly with source
+        cmd = f'source ./commands.sh && FPS={fps} update_fps'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"FPS updated to {fps}. {result.stdout}"})
     except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "message": f"Failed to update FPS: {str(e)}"}), 500
+        return jsonify({"success": False, 
+                       "message": f"Failed to update FPS: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
 
 @app.route('/camera/resolution', methods=['POST'])
 def update_resolution():
     try:
         resolution = request.form.get('resolution', '1920x1080')
-        # Execute the update_size command from commands.sh
-        subprocess.run(['bash', '-c', f'SIZE={resolution} ./commands.sh update_size'], check=True)
-        return jsonify({"success": True, "message": f"Resolution updated to {resolution}"})
+        # Execute the command directly with source
+        cmd = f'source ./commands.sh && SIZE={resolution} update_size'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"Resolution updated to {resolution}. {result.stdout}"})
     except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "message": f"Failed to update resolution: {str(e)}"}), 500
+        return jsonify({"success": False, 
+                       "message": f"Failed to update resolution: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
 
 @app.route('/camera/reboot', methods=['POST'])
 def reboot_camera():
     try:
-        # Execute the update_reboot command from commands.sh
-        subprocess.run(['bash', '-c', './commands.sh update_reboot'], check=True)
-        return jsonify({"success": True, "message": "Camera reboot initiated"})
+        # Execute the command directly with source
+        cmd = 'source ./commands.sh && update_reboot'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"Camera reboot initiated. {result.stdout}"})
     except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "message": f"Failed to reboot camera: {str(e)}"}), 500
-
+        return jsonify({"success": False, 
+                       "message": f"Failed to reboot camera: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
