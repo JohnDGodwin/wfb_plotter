@@ -12,6 +12,16 @@ MCS_INDEX=1
 FEC_K=8
 FEC_N=12
 
+read_wfb_config() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 'cat /etc/wfb.conf'
+    echo "Reading WFB configuration"
+}
+
+read_majestic_config() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 'cat /etc/majestic.yaml'
+    echo "Reading majestic configuration"
+}
+
 update_fps() {
 sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/fps: [0-9]*/fps: $FPS/\" /etc/majestic.yaml"
 echo "setting camera fps to $FPS"
