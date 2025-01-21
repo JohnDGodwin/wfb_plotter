@@ -13,6 +13,7 @@ import configparser
 import subprocess
 import queue
 import yaml
+import subprocess
 
 from udp_streamer import UDPStreamer  # External module for UDP streaming
 
@@ -1223,6 +1224,24 @@ def read_all_configs():
             "success": False,
             "message": f"Failed to read configs: {e.stderr if e.stderr else str(e)}"
         }), 500
+
+
+@app.route('/camera/ping-status')
+def check_camera_ping():
+    try:
+        # Use ping with a timeout of 1 second and count of 1
+        result = subprocess.run(['ping', '-c', '1', '-W', '1', '10.5.0.10'], 
+                              capture_output=True,
+                              text=True)
+        return jsonify({
+            "success": result.returncode == 0,
+            "message": "Camera is online" if result.returncode == 0 else "Camera is offline"
+        })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Error checking camera status: {str(e)}"
+        })
 
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
