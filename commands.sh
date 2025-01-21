@@ -15,7 +15,7 @@ echo "setting camera resolution to $SIZE"
 }
 
 update_bitrate() {
-sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/bitrate: [0-9x]*/size: $BITRATE/\" /etc/majestic.yaml"
+sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/bitrate: [0-9x]*/bitrate: $BITRATE/\" /etc/majestic.yaml"
 echo "setting camera resolution to $BITRATE"
 }
 
