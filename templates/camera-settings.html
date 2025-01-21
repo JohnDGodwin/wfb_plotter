@@ -6,7 +6,7 @@
     <title>Camera Settings</title>
     <link rel="stylesheet" href="styles.css">
     <style>
-        /* Keep existing styles */
+        /* Existing styles remain the same */
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -70,6 +70,22 @@
             flex-wrap: wrap;
         }
 
+        /* New styles for ping status */
+        .btn-ping {
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-ping.online {
+            background-color: #28a745;  /* Green */
+            border-color: #28a745;
+        }
+
+        .btn-ping.offline {
+            background-color: #dc3545;  /* Red */
+            border-color: #dc3545;
+        }
+
         @media (max-width: 576px) {
             .header-container {
                 flex-direction: column;
@@ -91,7 +107,7 @@
         <div class="header-container">
             <h1>Camera Settings</h1>
             <div class="button-group">
-                <button onclick="loadAllConfigs()" class="btn btn-secondary">Read Camera Settings</button>
+                <button onclick="loadAllConfigs()" id="readSettingsBtn" class="btn btn-secondary btn-ping">Read Camera Settings</button>
                 <button onclick="updateAllSettings()" class="btn btn-primary">Update All Settings</button>
                 <a href="/" class="btn btn-primary">Return to Front Page</a>
             </div>
@@ -178,8 +194,46 @@
         <div id="status-message" class="alert alert-info" style="display: none;"></div>
     </div>
 
-    <script>
-        // Show status messages
+      <script>
+        // Add ping check functionality
+        let pingInterval;
+
+        async function checkCameraStatus() {
+            try {
+                const response = await fetch('/camera/ping-status');
+                const data = await response.json();
+                const btn = document.getElementById('readSettingsBtn');
+                
+                if (data.success) {
+                    btn.classList.remove('offline');
+                    btn.classList.add('online');
+                } else {
+                    btn.classList.remove('online');
+                    btn.classList.add('offline');
+                }
+            } catch (error) {
+                console.error('Error checking camera status:', error);
+                const btn = document.getElementById('readSettingsBtn');
+                btn.classList.remove('online');
+                btn.classList.add('offline');
+            }
+        }
+
+        // Start periodic ping checks when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            checkCameraStatus(); // Initial check
+            pingInterval = setInterval(checkCameraStatus, 2000); // Check every 2 seconds
+            loadAllConfigs(); // Load initial configs
+        });
+
+        // Clean up interval when page is unloaded
+        window.addEventListener('beforeunload', () => {
+            if (pingInterval) {
+                clearInterval(pingInterval);
+            }
+        });
+
+        // Existing functions remain the same
         function showStatus(message, type = 'info') {
             const statusDiv = document.getElementById('status-message');
             statusDiv.textContent = message;
@@ -190,7 +244,6 @@
             }, 3000);
         }
 
-        // Load all configurations
         async function loadAllConfigs() {
             try {
                 const response = await fetch('/camera/read-all-configs');
@@ -228,7 +281,6 @@
             }
         }
 
-        // Update all settings
         async function updateAllSettings() {
             const settings = {
                 fps: document.getElementById('fps').value,
@@ -243,7 +295,6 @@
                 fec_n: document.getElementById('fec_n').value
             };
 
-            // Array of promises for all updates
             const updates = [
                 updateSetting('/camera/fps', { fps: settings.fps }),
                 updateSetting('/camera/resolution', { resolution: settings.resolution }),
@@ -266,7 +317,6 @@
             }
         }
 
-        // Helper function to update a single setting
         async function updateSetting(endpoint, data) {
             const formData = new FormData();
             Object.entries(data).forEach(([key, value]) => {
@@ -284,9 +334,6 @@
 
             return response.json();
         }
-
-        // Auto-load settings on page load
-        document.addEventListener('DOMContentLoaded', loadAllConfigs);
     </script>
 </body>
 </html>
