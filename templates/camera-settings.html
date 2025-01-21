@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Settings</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Camera Settings</h1>
+            <a href="/" class="btn btn-primary">Return to Front Page</a>
+        </div>
+
+        <div class="row">
+            <!-- FPS Settings -->
+            <div class="col mb-4">
+                <form action="/camera/fps" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">FPS Settings</legend>
+                        <div class="mb-3">
+                            <label for="fps" class="form-label">Camera FPS</label>
+                            <input type="number" id="fps" name="fps" class="form-control" value="60" min="1" max="120" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update FPS</button>
+                    </fieldset>
+                </form>
+            </div>
+
+            <!-- Resolution Settings -->
+            <div class="col mb-4">
+                <form action="/camera/resolution" method="POST" class="mb-4">
+                    <fieldset class="border p-3">
+                        <legend class="w-auto">Resolution Settings</legend>
+                        <div class="mb-3">
+                            <label for="resolution" class="form-label">Camera Resolution</label>
+                            <select id="resolution" name="resolution" class="form-control" required>
+                                <option value="1920x1080">1920x1080 (1080p)</option>
+                                <option value="1280x720">1280x720 (720p)</option>
+                                <option value="3840x2160">3840x2160 (4K)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Resolution</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reboot Camera -->
+        <div class="mb-4">
+            <form action="/camera/reboot" method="POST" onsubmit="return confirm('Are you sure you want to reboot the camera?');">
+                <fieldset class="border p-3">
+                    <legend class="w-auto">Camera Control</legend>
+                    <button type="submit" class="btn btn-danger">Reboot Camera</button>
+                </fieldset>
+            </form>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="status-message" class="alert alert-info" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Show status messages
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status-message');
+            statusDiv.textContent = message;
+            statusDiv.className = `alert alert-${type}`;
+            statusDiv.style.display = 'block';
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // Handle form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    showStatus(data.message, data.success ? 'success' : 'danger');
+                } catch (error) {
+                    showStatus('An error occurred', 'danger');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
