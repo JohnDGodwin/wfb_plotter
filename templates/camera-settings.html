@@ -222,7 +222,7 @@
         // Start periodic ping checks when page loads
         document.addEventListener('DOMContentLoaded', () => {
             checkCameraStatus(); // Initial check
-            pingInterval = setInterval(checkCameraStatus, 2000); // Check every 2 seconds
+            pingInterval = setInterval(checkCameraStatus, 5000); // Check every 5 seconds
             loadAllConfigs(); // Load initial configs
         });
 
