@@ -2,6 +2,7 @@
 
 FPS=60
 SIZE=1920x1080
+BITRATE=4096
 
 update_fps() {
 sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/fps: [0-9]*/fps: $FPS/\" /etc/majestic.yaml"
@@ -11,6 +12,11 @@ echo "setting camera fps to $FPS"
 update_size() {
 sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/size: [0-9x]*/size: $SIZE/\" /etc/majestic.yaml"
 echo "setting camera resolution to $SIZE"
+}
+
+update_bitrate() {
+sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/bitrate: [0-9x]*/size: $BITRATE/\" /etc/majestic.yaml"
+echo "setting camera resolution to $BITRATE"
 }
 
 update_reboot(){
