@@ -980,6 +980,42 @@ def shutdown_signal_handler(signal_number, frame):
                 pass
     sys.exit(0)
 
+#########################################################################
+#  CAMERA SETTINGS ROUTES
+#########################################################################
+@app.route('/camera-settings')
+def camera_settings():
+    return render_template('camera-settings.html')
+
+@app.route('/camera/fps', methods=['POST'])
+def update_fps():
+    try:
+        fps = request.form.get('fps', '60')
+        # Execute the update_fps command from commands.sh
+        subprocess.run(['bash', '-c', f'FPS={fps} ./commands.sh update_fps'], check=True)
+        return jsonify({"success": True, "message": f"FPS updated to {fps}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "message": f"Failed to update FPS: {str(e)}"}), 500
+
+@app.route('/camera/resolution', methods=['POST'])
+def update_resolution():
+    try:
+        resolution = request.form.get('resolution', '1920x1080')
+        # Execute the update_size command from commands.sh
+        subprocess.run(['bash', '-c', f'SIZE={resolution} ./commands.sh update_size'], check=True)
+        return jsonify({"success": True, "message": f"Resolution updated to {resolution}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "message": f"Failed to update resolution: {str(e)}"}), 500
+
+@app.route('/camera/reboot', methods=['POST'])
+def reboot_camera():
+    try:
+        # Execute the update_reboot command from commands.sh
+        subprocess.run(['bash', '-c', './commands.sh update_reboot'], check=True)
+        return jsonify({"success": True, "message": "Camera reboot initiated"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "message": f"Failed to reboot camera: {str(e)}"}), 500
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
