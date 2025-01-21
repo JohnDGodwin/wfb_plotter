@@ -4,6 +4,14 @@ FPS=60
 SIZE=1920x1080
 BITRATE=4096
 
+CHANNEL=161
+TXPOWER_OVERRIDE=1
+STBC=0
+LDPC=0
+MCS_INDEX=1
+FEC_K=8
+FEC_N=12
+
 update_fps() {
 sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/fps: [0-9]*/fps: $FPS/\" /etc/majestic.yaml"
 echo "setting camera fps to $FPS"
@@ -17,6 +25,50 @@ echo "setting camera resolution to $SIZE"
 update_bitrate() {
 sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i \"/video0:/,/video1:/ s/bitrate: [0-9x]*/bitrate: $BITRATE/\" /etc/majestic.yaml"
 echo "setting camera resolution to $BITRATE"
+}
+
+#!/bin/bash
+
+# Function to update channel
+update_channel() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^channel=/ s/=.*/=$CHANNEL/' /etc/wfb.conf"
+    echo "Setting channel to $1"
+}
+
+# Function to update driver_txpower_override
+update_txpower_override() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^driver_txpower_override=/ s/=.*/=$TXPOWER_OVERRIDE/' /etc/wfb.conf"
+    echo "Setting driver txpower override to $1"
+}
+
+# Function to update stbc
+update_stbc() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^stbc=/ s/=.*/=$STBC/' /etc/wfb.conf"
+    echo "Setting STBC to $1"
+}
+
+# Function to update ldpc
+update_ldpc() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^ldpc=/ s/=.*/=$LDPC/' /etc/wfb.conf"
+    echo "Setting LDPC to $1"
+}
+
+# Function to update mcs_index
+update_mcs_index() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^mcs_index=/ s/=.*/=$MCS_INDEX/' /etc/wfb.conf"
+    echo "Setting MCS index to $1"
+}
+
+# Function to update fec_k
+update_fec_k() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^fec_k=/ s/=.*/=$FEC_K/' /etc/wfb.conf"
+    echo "Setting FEC K to $1"
+}
+
+# Function to update fec_n
+update_fec_n() {
+    sshpass -p '12345' ssh -o StrictHostKeyChecking=no root@10.5.0.10 "sed -i '/^fec_n=/ s/=.*/=$FEC_N/' /etc/wfb.conf"
+    echo "Setting FEC N to $1"
 }
 
 update_reboot(){
