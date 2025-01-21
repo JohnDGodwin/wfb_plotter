@@ -10,11 +10,14 @@
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1>Camera Settings</h1>
-            <a href="/" class="btn btn-primary">Return to Front Page</a>
+            <div>
+                <button onclick="loadWFBConfig()" class="btn btn-secondary me-2">Load WFB Config</button>
+                <a href="/" class="btn btn-primary">Return to Front Page</a>
+            </div>
         </div>
 
         <div class="row">
-            <!-- FPS Settings -->
+            <!-- Existing Camera Settings -->
             <div class="col mb-4">
                 <form action="/camera/fps" method="POST" class="mb-4">
                     <fieldset class="border p-3">
@@ -61,95 +64,43 @@
             </div>
         </div>
 
-        <!-- WFB Settings -->
-        <div class="row">
-            <!-- Channel Settings -->
-            <div class="col mb-4">
-                <form action="/camera/channel" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">Channel Settings</legend>
-                        <div class="mb-3">
-                            <label for="channel" class="form-label">WiFi Channel</label>
-                            <input type="number" id="channel" name="channel" class="form-control" value="161" min="1" max="165" required>
+        <!-- WFB Configuration Section -->
+        <div class="row mb-4">
+            <div class="col">
+                <form id="wfb-config-form" class="border p-3">
+                    <legend class="w-auto">WFB Configuration</legend>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="channel" class="form-label">Channel</label>
+                            <input type="number" id="channel" name="channel" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update Channel</button>
-                    </fieldset>
-                </form>
-            </div>
-
-            <!-- TX Power Override -->
-            <div class="col mb-4">
-                <form action="/camera/txpower" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">TX Power Settings</legend>
-                        <div class="mb-3">
+                        <div class="col-md-4 mb-3">
                             <label for="txpower" class="form-label">TX Power Override</label>
-                            <input type="number" id="txpower" name="txpower" class="form-control" value="1" min="0" max="1" required>
+                            <input type="number" id="txpower" name="driver_txpower_override" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update TX Power</button>
-                    </fieldset>
-                </form>
-            </div>
-
-            <!-- STBC Settings -->
-            <div class="col mb-4">
-                <form action="/camera/stbc" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">STBC Settings</legend>
-                        <div class="mb-3">
-                            <label for="stbc" class="form-label">STBC Enable</label>
-                            <input type="number" id="stbc" name="stbc" class="form-control" value="0" min="0" max="1" required>
+                        <div class="col-md-4 mb-3">
+                            <label for="mcs_index" class="form-label">MCS Index</label>
+                            <input type="number" id="mcs_index" name="mcs_index" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update STBC</button>
-                    </fieldset>
-                </form>
-            </div>
-        </div>
-
-        <div class="row">
-            <!-- LDPC Settings -->
-            <div class="col mb-4">
-                <form action="/camera/ldpc" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">LDPC Settings</legend>
-                        <div class="mb-3">
-                            <label for="ldpc" class="form-label">LDPC Enable</label>
-                            <input type="number" id="ldpc" name="ldpc" class="form-control" value="0" min="0" max="1" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="stbc" class="form-label">STBC</label>
+                            <input type="number" id="stbc" name="stbc" class="form-control" min="0" max="1" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update LDPC</button>
-                    </fieldset>
-                </form>
-            </div>
-
-            <!-- MCS Index Settings -->
-            <div class="col mb-4">
-                <form action="/camera/mcs" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">MCS Index Settings</legend>
-                        <div class="mb-3">
-                            <label for="mcs" class="form-label">MCS Index</label>
-                            <input type="number" id="mcs" name="mcs" class="form-control" value="1" min="0" max="7" required>
+                        <div class="col-md-3 mb-3">
+                            <label for="ldpc" class="form-label">LDPC</label>
+                            <input type="number" id="ldpc" name="ldpc" class="form-control" min="0" max="1" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update MCS Index</button>
-                    </fieldset>
-                </form>
-            </div>
-
-            <!-- FEC Settings -->
-            <div class="col mb-4">
-                <form action="/camera/fec" method="POST" class="mb-4">
-                    <fieldset class="border p-3">
-                        <legend class="w-auto">FEC Settings</legend>
-                        <div class="mb-3">
+                        <div class="col-md-3 mb-3">
                             <label for="fec_k" class="form-label">FEC K</label>
-                            <input type="number" id="fec_k" name="fec_k" class="form-control" value="8" min="1" max="16" required>
+                            <input type="number" id="fec_k" name="fec_k" class="form-control" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="col-md-3 mb-3">
                             <label for="fec_n" class="form-label">FEC N</label>
-                            <input type="number" id="fec_n" name="fec_n" class="form-control" value="12" min="1" max="16" required>
+                            <input type="number" id="fec_n" name="fec_n" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary">Update FEC</button>
-                    </fieldset>
+                    </div>
                 </form>
             </div>
         </div>
@@ -180,22 +131,49 @@
             }, 3000);
         }
 
+        // Load WFB Configuration
+        async function loadWFBConfig() {
+            try {
+                const response = await fetch('/camera/read-wfb-config');
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Fill in the form fields with the config values
+                    const config = data.config;
+                    Object.keys(config).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.value = config[key];
+                        }
+                    });
+                    showStatus('WFB Configuration loaded successfully', 'success');
+                } else {
+                    showStatus(data.message || 'Failed to load WFB configuration', 'danger');
+                }
+            } catch (error) {
+                showStatus('Error loading WFB configuration', 'danger');
+                console.error('Error:', error);
+            }
+        }
+
         // Handle form submissions
         document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                try {
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const data = await response.json();
-                    showStatus(data.message, data.success ? 'success' : 'danger');
-                } catch (error) {
-                    showStatus('An error occurred', 'danger');
-                }
-            });
+            if (form.id !== 'wfb-config-form') {  // Skip the WFB config form
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const data = await response.json();
+                        showStatus(data.message, data.success ? 'success' : 'danger');
+                    } catch (error) {
+                        showStatus('An error occurred', 'danger');
+                    }
+                });
+            }
         });
     </script>
 </body>
