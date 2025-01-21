@@ -1053,7 +1053,113 @@ def update_bitrate():
         return jsonify({"success": False, 
                        "message": f"Failed to update bitrate: {e.stdout if e.stdout else str(e)}"}, 
                        500)
+
+@app.route('/camera/channel', methods=['POST'])
+def update_channel():
+    try:
+        channel = request.form.get('channel', '161')
+        cmd = f'source ./commands.sh && CHANNEL={channel} update_channel'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"Channel updated to {channel}. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update channel: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
+@app.route('/camera/txpower', methods=['POST'])
+def update_txpower():
+    try:
+        txpower = request.form.get('txpower', '1')
+        cmd = f'source ./commands.sh && TXPOWER_OVERRIDE={txpower} update_txpower_override'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"TX Power Override updated to {txpower}. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update TX power: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
+@app.route('/camera/stbc', methods=['POST'])
+def update_stbc():
+    try:
+        stbc = request.form.get('stbc', '0')
+        cmd = f'source ./commands.sh && STBC={stbc} update_stbc'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"STBC updated to {stbc}. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update STBC: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
+@app.route('/camera/ldpc', methods=['POST'])
+def update_ldpc():
+    try:
+        ldpc = request.form.get('ldpc', '0')
+        cmd = f'source ./commands.sh && LDPC={ldpc} update_ldpc'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"LDPC updated to {ldpc}. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update LDPC: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
+@app.route('/camera/mcs', methods=['POST'])
+def update_mcs():
+    try:
+        mcs = request.form.get('mcs', '1')
+        cmd = f'source ./commands.sh && MCS_INDEX={mcs} update_mcs_index'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"MCS Index updated to {mcs}. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update MCS Index: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
+@app.route('/camera/fec', methods=['POST'])
+def update_fec():
+    try:
+        fec_k = request.form.get('fec_k', '8')
+        fec_n = request.form.get('fec_n', '12')
         
+        # Run both commands
+        cmd_k = f'source ./commands.sh && FEC_K={fec_k} update_fec_k'
+        cmd_n = f'source ./commands.sh && FEC_N={fec_n} update_fec_n'
+        
+        result_k = subprocess.run(['bash', '-c', cmd_k], 
+                                check=True,
+                                capture_output=True,
+                                text=True)
+        result_n = subprocess.run(['bash', '-c', cmd_n], 
+                                check=True,
+                                capture_output=True,
+                                text=True)
+                                
+        return jsonify({"success": True, 
+                       "message": f"FEC updated to K={fec_k}, N={fec_n}. {result_k.stdout} {result_n.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update FEC parameters: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
