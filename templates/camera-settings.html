@@ -9,13 +9,13 @@
 <body>
     <div class="container">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Camera Settings</h1>
+    <h1>Camera Settings</h1>
             <div>
-                <button onclick="loadWFBConfig()" class="btn btn-secondary me-2">Load WFB Config</button>
+                <button onclick="loadAllConfigs()" class="btn btn-secondary me-2">Read Camera Settings</button>
                 <a href="/" class="btn btn-primary">Return to Front Page</a>
             </div>
         </div>
-
+    </div>
         <div class="row">
             <!-- Existing Camera Settings -->
             <div class="col mb-4">
@@ -119,62 +119,75 @@
         <div id="status-message" class="alert alert-info" style="display: none;"></div>
     </div>
 
-    <script>
-        // Show status messages
-        function showStatus(message, type = 'info') {
-            const statusDiv = document.getElementById('status-message');
-            statusDiv.textContent = message;
-            statusDiv.className = `alert alert-${type}`;
-            statusDiv.style.display = 'block';
-            setTimeout(() => {
-                statusDiv.style.display = 'none';
-            }, 3000);
-        }
+<script>
+    // Show status messages
+    function showStatus(message, type = 'info') {
+        const statusDiv = document.getElementById('status-message');
+        statusDiv.textContent = message;
+        statusDiv.className = `alert alert-${type}`;
+        statusDiv.style.display = 'block';
+        setTimeout(() => {
+            statusDiv.style.display = 'none';
+        }, 3000);
+    }
 
-        // Load WFB Configuration
-        async function loadWFBConfig() {
-            try {
-                const response = await fetch('/camera/read-wfb-config');
-                const data = await response.json();
-                
-                if (data.success) {
-                    // Fill in the form fields with the config values
-                    const config = data.config;
-                    Object.keys(config).forEach(key => {
-                        const element = document.getElementById(key);
-                        if (element) {
-                            element.value = config[key];
-                        }
-                    });
-                    showStatus('WFB Configuration loaded successfully', 'success');
-                } else {
-                    showStatus(data.message || 'Failed to load WFB configuration', 'danger');
-                }
-            } catch (error) {
-                showStatus('Error loading WFB configuration', 'danger');
-                console.error('Error:', error);
-            }
-        }
-
-        // Handle form submissions
-        document.querySelectorAll('form').forEach(form => {
-            if (form.id !== 'wfb-config-form') {  // Skip the WFB config form
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(form);
-                    try {
-                        const response = await fetch(form.action, {
-                            method: 'POST',
-                            body: formData
-                        });
-                        const data = await response.json();
-                        showStatus(data.message, data.success ? 'success' : 'danger');
-                    } catch (error) {
-                        showStatus('An error occurred', 'danger');
+    // Load all configurations
+    async function loadAllConfigs() {
+        try {
+            const response = await fetch('/camera/read-all-configs');
+            const data = await response.json();
+            
+            if (data.success) {
+                // Fill in WFB config fields
+                const wfb_config = data.wfb_config;
+                Object.keys(wfb_config).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.value = wfb_config[key];
                     }
                 });
+
+                // Fill in video settings
+                const video_settings = data.video_settings;
+                if (video_settings.fps) {
+                    document.getElementById('fps').value = video_settings.fps;
+                }
+                if (video_settings.bitrate) {
+                    document.getElementById('bitrate').value = video_settings.bitrate;
+                }
+                if (video_settings.size) {
+                    document.getElementById('resolution').value = video_settings.size;
+                }
+
+                showStatus('Camera settings loaded successfully', 'success');
+            } else {
+                showStatus(data.message || 'Failed to load configurations', 'danger');
             }
-        });
-    </script>
+        } catch (error) {
+            showStatus('Error loading configurations', 'danger');
+            console.error('Error:', error);
+        }
+    }
+
+    // Handle form submissions
+    document.querySelectorAll('form').forEach(form => {
+        if (form.id !== 'wfb-config-form') {  // Skip the WFB config form
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await response.json();
+                    showStatus(data.message, data.success ? 'success' : 'danger');
+                } catch (error) {
+                    showStatus('An error occurred', 'danger');
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>
