@@ -1036,6 +1036,24 @@ def reboot_camera():
         return jsonify({"success": False, 
                        "message": f"Failed to reboot camera: {e.stdout if e.stdout else str(e)}"}, 
                        500)
+        
+@app.route('/camera/bitrate', methods=['POST'])
+def update_bitrate():
+    try:
+        bitrate = request.form.get('bitrate', '4096')
+        # Execute the command directly with source
+        cmd = f'source ./commands.sh && BITRATE={bitrate} update_bitrate'
+        result = subprocess.run(['bash', '-c', cmd], 
+                              check=True,
+                              capture_output=True,
+                              text=True)
+        return jsonify({"success": True, 
+                       "message": f"Bitrate updated to {bitrate} kbps. {result.stdout}"})
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, 
+                       "message": f"Failed to update bitrate: {e.stdout if e.stdout else str(e)}"}, 
+                       500)
+        
 if __name__ == '__main__':
     signal.signal(signal.SIGINT, shutdown_signal_handler)
     signal.signal(signal.SIGTERM, shutdown_signal_handler)
